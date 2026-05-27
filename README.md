@@ -1,11 +1,19 @@
-# @rheo/sdk
+# @rheo-finance/sdk
 
 Official TypeScript/Node.js SDK for the [Rheo](https://rheo.se) integration API.
 
-Push inventory from your ERP or DMS to Tradera auctions. Receive typed webhook events when items sell. No manual HTTP wiring, no signature boilerplate.
+Push inventory from your ERP or DMS to Tradera auctions. Receive typed webhook events when items sell.
 
 ```
-npm install @rheo/sdk
+npm install @rheo-finance/sdk
+```
+
+```
+pnpm add @rheo-finance/sdk
+```
+
+```
+bun add @rheo-finance/sdk
 ```
 
 Requires Node.js 18+.
@@ -15,7 +23,7 @@ Requires Node.js 18+.
 ## Quick start
 
 ```typescript
-import { RheoClient } from '@rheo/sdk'
+import { RheoClient } from '@rheo-finance/sdk'
 
 const rheo = new RheoClient({
   apiKey: process.env.RHEO_API_KEY!,
@@ -65,9 +73,29 @@ app.post('/webhooks/rheo', rheo.webhooks.middleware(), (req, res) => {
 
 ---
 
+## Publishing
+
+```bash
+# Bump version, tag, and push — GitHub Actions handles the rest
+npm version patch   # or minor / major
+git push --follow-tags
+```
+
+Requires `NPM_TOKEN` secret set in GitHub repo settings (Settings → Secrets → `NPM_TOKEN`).
+Generate at npmjs.com → Access Tokens → **Automation**.
+
+To publish manually:
+
+```bash
+cp .env.example .env   # fill in NPM_TOKEN
+npm publish --access public
+```
+
+---
+
 ## Documentation
 
-Full documentation at [docs.rheo.se/sdk/typescript/](https://docs.rheo.se/sdk/typescript/)
+Full reference at [docs.rheo.se/sdk/typescript/](https://docs.rheo.se/sdk/typescript/)
 
 ---
 
