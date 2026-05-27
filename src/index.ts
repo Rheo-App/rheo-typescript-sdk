@@ -5,7 +5,7 @@ export { RheoApiError, RheoRateLimitError, RheoWebhookSignatureError } from './e
 
 export type {
   DomainObject,
-  DomainObjectAutomotivePart,
+  DomainObjectAutoParts,
   DomainObjectElectronics,
   DomainObjectFashion,
   RheoItemStatus,

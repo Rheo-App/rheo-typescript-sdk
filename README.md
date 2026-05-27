@@ -37,9 +37,11 @@ await rheo.items.upsert('ERP_PART_12345', {
   shippingCost: 149,
   imageUrls: ['https://cdn.example.com/parts/12345/1.jpg'],
   domain: {
-    domain: 'automotive_part',
+    domain: 'auto_parts',
+    partName: 'Bromsok fram vänster',
     oemCode: '31400452',
     manufacturer: 'Volvo',
+    vehicleType: 'Bil',
     conditionGrade: 'B',
   },
   autoPublishTradera: true,

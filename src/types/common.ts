@@ -1,9 +1,11 @@
-export interface DomainObjectAutomotivePart {
-  domain: 'automotive_part'
+export interface DomainObjectAutoParts {
+  domain: 'auto_parts'
+  partName?: string
   oemCode?: string
   manufacturer?: string
   compatibleModels?: string[]
   donorVehicleYear?: number
+  vehicleType?: string
   conditionGrade?: string
 }
 
@@ -24,7 +26,7 @@ export interface DomainObjectFashion {
 }
 
 export type DomainObject =
-  | DomainObjectAutomotivePart
+  | DomainObjectAutoParts
   | DomainObjectElectronics
   | DomainObjectFashion
 
