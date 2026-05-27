@@ -1,5 +1,5 @@
 {
-  "name": "@rheo-finance/sdk",
+  "name": "rheo-sdk",
   "version": "0.4.0",
   "description": "Official TypeScript SDK for the Rheo integration API",
   "license": "MIT",

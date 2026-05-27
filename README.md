@@ -1,19 +1,19 @@
-# @rheo-finance/sdk
+# rheo-sdk
 
 Official TypeScript/Node.js SDK for the [Rheo](https://rheo.se) integration API.
 
 Push inventory from your ERP or DMS to Tradera auctions. Receive typed webhook events when items sell.
 
 ```
-npm install @rheo-finance/sdk
+npm install rheo-sdk
 ```
 
 ```
-pnpm add @rheo-finance/sdk
+pnpm add rheo-sdk
 ```
 
 ```
-bun add @rheo-finance/sdk
+bun add rheo-sdk
 ```
 
 Requires Node.js 18+.
@@ -23,7 +23,7 @@ Requires Node.js 18+.
 ## Quick start
 
 ```typescript
-import { RheoClient } from '@rheo-finance/sdk'
+import { RheoClient } from 'rheo-sdk'
 
 const rheo = new RheoClient({
   apiKey: process.env.RHEO_API_KEY!,
@@ -69,27 +69,28 @@ app.post('/webhooks/rheo', rheo.webhooks.middleware(), (req, res) => {
 - **Typed errors** — `RheoApiError`, `RheoRateLimitError`, `RheoWebhookSignatureError`
 - **Vehicle hierarchy** — model donor vehicles as containers; parts reference their vehicle via `parentExternalId`
 - **Reseller routing** — pass `partnerAccount` to scope all calls to a member account
-- **Dual CJS/ESM** — works in both CommonJS and ESM projects without configuration
+- **Dual CJS/ESM** — works in CommonJS and ESM projects without configuration
 
 ---
 
 ## Publishing
 
 ```bash
-# Bump version, tag, and push — GitHub Actions handles the rest
+# Bump version, tag, push — GitHub Actions publishes automatically
 npm version patch   # or minor / major
 git push --follow-tags
 ```
 
-Requires `NPM_TOKEN` secret set in GitHub repo settings (Settings → Secrets → `NPM_TOKEN`).
+Requires `NPM_TOKEN` secret in GitHub repo Settings → Secrets.  
 Generate at npmjs.com → Access Tokens → **Automation**.
 
-To publish manually:
+To publish manually from your machine:
 
 ```bash
-cp .env.example .env   # fill in NPM_TOKEN
-npm publish --access public
+npm publish
 ```
+
+Your npm session is already authenticated. If you hit a 2FA prompt, pass `--otp=<code>` with your authenticator code, or use an Automation token.
 
 ---
 
