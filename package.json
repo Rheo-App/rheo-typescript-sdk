@@ -1,6 +1,6 @@
 {
   "name": "rheo-sdk",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Official TypeScript SDK for the Rheo integration API",
   "license": "MIT",
   "main": "dist/index.js",
@@ -18,13 +18,22 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["rheo", "api", "sdk", "integration", "secondhand", "automotive"],
+  "keywords": [
+    "rheo",
+    "api",
+    "sdk",
+    "integration",
+    "secondhand",
+    "automotive"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Rheo-App/rheo-typescript-sdk.git"
