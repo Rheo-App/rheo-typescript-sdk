@@ -52,12 +52,54 @@ console.log(item.traderaAdUrl)  // https://www.tradera.com/item/398271634
 // Receive sale events
 app.post('/webhooks/rheo', rheo.webhooks.middleware(), (req, res) => {
   const event = rheo.webhooks.fromRequest(req)
-  if (event.type === 'item.sold') {
+  if (event.eventType === 'item.sold') {
     console.log(`${event.data.externalId} sold for ${event.data.salePrice} SEK`)
   }
   res.sendStatus(200)
 })
 ```
+
+---
+
+## Reseller routing (many accounts, one key)
+
+If you manage several Rheo accounts under one reseller API key (e.g. a chain of
+dismantling yards), pass `partnerAccount` to route a single call to a specific member.
+The value is the reseller's `external_id` for that member — the reference set in the
+business **Managed accounts** UI. A per-call value overrides any client-level default:
+
+```typescript
+await rheo.items.upsert('10-PART-001', data, { partnerAccount: '10' })
+await rheo.items.updatePrice('10-PART-001', { price: 800 }, { partnerAccount: '10' })
+const yard = await rheo.items.list({ status: 'active' }, { partnerAccount: '10' })
+```
+
+Set `partnerAccount` on `RheoClient` to scope *every* call to one account instead.
+
+---
+
+## Webhooks
+
+Each webhook endpoint has its **own signing secret** — verify with the secret of the
+endpoint that received the event. Pass it explicitly, or set one `webhookSecret` on the
+client. Pass an array to accept any secret during rotation:
+
+```typescript
+const event = rheo.webhooks.verify(rawBody, signature, endpointSecret)
+const rotating = rheo.webhooks.verify(rawBody, signature, [oldSecret, newSecret])
+```
+
+Events carry an additive `data.account`. On a reseller endpoint (`scope: 'members'`),
+`account.memberExternalId` tells you which member the event belongs to:
+
+```typescript
+if (event.eventType === 'item.sold') {
+  decrementStock(event.data.account?.memberExternalId, event.data.externalId)
+}
+```
+
+Delivered event types: `item.created`, `item.images_ready`, `listing.created`,
+`listing.ended`, `listing.failed`, `item.sold`.
 
 ---
 
@@ -67,8 +109,8 @@ app.post('/webhooks/rheo', rheo.webhooks.middleware(), (req, res) => {
 - **Webhook verification** — HMAC-SHA256, timing-safe, Express middleware included
 - **Automatic retry** — exponential backoff on 429 / 5xx, honours `Retry-After`
 - **Typed errors** — `RheoApiError`, `RheoRateLimitError`, `RheoWebhookSignatureError`
-- **Vehicle hierarchy** — model donor vehicles as containers; parts reference their vehicle via `parentExternalId`
-- **Reseller routing** — pass `partnerAccount` to scope all calls to a member account
+- **Vehicle hierarchy** — model donor vehicles as containers; parts reference their vehicle via `parentExternalId`, list parts with `children`
+- **Reseller routing** — per-call `{ partnerAccount }` on any item method, or set it client-wide
 - **Dual CJS/ESM** — works in CommonJS and ESM projects without configuration
 
 ---

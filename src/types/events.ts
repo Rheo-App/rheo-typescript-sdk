@@ -1,100 +1,83 @@
+// Webhook event types — typed mirror of the payloads Rheo POSTs to your webhook
+// endpoints (rheo-market/src/worker/handlers/integration.rs). The envelope is
+// { eventId, eventType, timestamp, data } and every `data` carries the shared
+// fields below plus an additive `account` object; per-event fields are merged in.
+
+/**
+ * Identifies which Rheo account an event belongs to. `rheoUserId` is always the
+ * owning account. `memberExternalId` is present only when the event is delivered
+ * to a reseller endpoint (`scope='members'`) — it is the reseller's own reference
+ * for the member, so one reseller endpoint can route the event to the right yard.
+ */
+export interface EventAccount {
+  rheoUserId: string
+  memberExternalId?: string
+}
+
 interface BaseEvent {
-  id: string
+  /** Unique event id, e.g. `evt_…`. Use it to deduplicate (at-least-once delivery). */
+  eventId: string
+  /** RFC3339 timestamp of when the event was emitted. */
   timestamp: string
-  apiVersion: string
 }
 
+/** Fields present on every event `data` object. */
+export interface EventData {
+  /** The integrator's external id for the item (unchanged across all events). */
+  externalId: string
+  /** Rheo's internal item UUID. */
+  rheoItemId: string
+  /** Origin platform, e.g. `tradera`, `rheo`, `rheo_stripe`, `rheo_swish`. */
+  platform: string
+  /** Sale price in SEK. `0` for non-sale events. */
+  salePrice: number
+  currency: string
+  account?: EventAccount
+}
+
+/** A new item (or container) was created via the integration API. */
 export interface ItemCreatedEvent extends BaseEvent {
-  type: 'item.created'
-  data: { externalId: string }
+  eventType: 'item.created'
+  data: EventData & { type?: 'item' | 'container' }
 }
 
+/** Background image processing finished for an item. */
 export interface ItemImagesReadyEvent extends BaseEvent {
-  type: 'item.images_ready'
-  data: { externalId: string; imageCount: number }
+  eventType: 'item.images_ready'
+  data: EventData & { imagesProcessed?: number }
 }
 
-export interface ItemAIPricedEvent extends BaseEvent {
-  type: 'item.ai_priced'
-  data: { externalId: string; aiPrice: number }
-}
-
-export interface ItemAIListedEvent extends BaseEvent {
-  type: 'item.ai_listed'
-  data: { externalId: string; title: string; description: string }
-}
-
+/** A Tradera auction goes live. */
 export interface ListingCreatedEvent extends BaseEvent {
-  type: 'listing.created'
-  data: {
-    externalId: string
-    platform: string
-    platformAdId: string
-    platformAdUrl?: string
-  }
+  eventType: 'listing.created'
+  data: EventData & { traderaAdId?: string; traderaAdUrl?: string }
 }
 
+/** A Tradera auction closed without a winning bid. */
 export interface ListingEndedEvent extends BaseEvent {
-  type: 'listing.ended'
-  data: { externalId: string; platform: string }
+  eventType: 'listing.ended'
+  data: EventData & { traderaAdId?: string }
 }
 
+/** Rheo could not publish the Tradera listing. `error` describes the cause. */
 export interface ListingFailedEvent extends BaseEvent {
-  type: 'listing.failed'
-  data: { externalId: string; platform: string; reason: string }
+  eventType: 'listing.failed'
+  data: EventData & { error?: string }
 }
 
+/** The item sold (Tradera hammer price, or a direct Rheo sale). */
 export interface ItemSoldEvent extends BaseEvent {
-  type: 'item.sold'
-  data: {
-    externalId: string
-    salePrice: number
-    platform: string
-    buyerCountry?: string
-  }
-}
-
-export interface ItemStatusChangedEvent extends BaseEvent {
-  type: 'item.status_changed'
-  data: { externalId: string; fromStatus: string; toStatus: string }
-}
-
-export interface WorkflowApprovalPendingEvent extends BaseEvent {
-  type: 'workflow.approval_pending'
-  data: {
-    runId: string
-    workflowId: string
-    nodeId: string
-    prompt: string
-    subjectExternalId?: string
-  }
-}
-
-export interface WorkflowStepCompletedEvent extends BaseEvent {
-  type: 'workflow.step_completed'
-  data: { runId: string; workflowId: string; nodeId: string; subjectExternalId?: string }
-}
-
-export interface WorkflowRunCompletedEvent extends BaseEvent {
-  type: 'workflow.run_completed'
-  data: {
-    runId: string
-    workflowId: string
-    status: 'success' | 'failed' | 'cancelled'
-    subjectExternalId?: string
-  }
+  eventType: 'item.sold'
+  data: EventData & { traderaAdId?: string }
 }
 
 export type RheoEvent =
   | ItemCreatedEvent
   | ItemImagesReadyEvent
-  | ItemAIPricedEvent
-  | ItemAIListedEvent
   | ListingCreatedEvent
   | ListingEndedEvent
   | ListingFailedEvent
   | ItemSoldEvent
-  | ItemStatusChangedEvent
-  | WorkflowApprovalPendingEvent
-  | WorkflowStepCompletedEvent
-  | WorkflowRunCompletedEvent
+
+/** The string literal union of all event types Rheo delivers. */
+export type RheoEventType = RheoEvent['eventType']

@@ -1,6 +1,8 @@
 export { RheoClient } from './client.js'
 export type { RheoClientOptions } from './client.js'
 
+export type { RequestOptions } from './resources/items.js'
+
 export { RheoApiError, RheoRateLimitError, RheoWebhookSignatureError } from './errors.js'
 
 export type {
@@ -26,11 +28,14 @@ export type {
   BatchUpsertItem,
   BatchUpsertRequest,
   BatchUpsertResponse,
-  HistoryEntry,
+  ChildItem,
+  ItemChildrenResponse,
+  ItemHistoryEvent,
   ItemHistoryResponse,
   ItemListResponse,
   ItemStatusResponse,
   ItemSummaryResponse,
+  ListItem,
   ListItemsParams,
   UpdatePriceRequest,
   UpdateStatusRequest,
@@ -39,17 +44,14 @@ export type {
 } from './types/items.js'
 
 export type {
-  ItemAIListedEvent,
-  ItemAIPricedEvent,
+  EventAccount,
+  EventData,
   ItemCreatedEvent,
   ItemImagesReadyEvent,
   ItemSoldEvent,
-  ItemStatusChangedEvent,
   ListingCreatedEvent,
   ListingEndedEvent,
   ListingFailedEvent,
   RheoEvent,
-  WorkflowApprovalPendingEvent,
-  WorkflowRunCompletedEvent,
-  WorkflowStepCompletedEvent,
+  RheoEventType,
 } from './types/events.js'
