@@ -38,10 +38,8 @@ await rheo.items.upsert('ERP_PART_12345', {
   imageUrls: ['https://cdn.example.com/parts/12345/1.jpg'],
   domain: {
     domain: 'auto_parts',
-    partName: 'Bromsok fram vänster',
-    oemCode: '31400452',
-    manufacturer: 'Volvo',
-    vehicleType: 'Bil',
+    vehicle: { manufacturer: 'Volvo', model: 'XC90', year: 2018, vehicleType: 'Bil' },
+    part: { name: 'Bromsok fram vänster', oemNumber: '31400452' },
     conditionGrade: 'B',
   },
   autoPublishTradera: true,

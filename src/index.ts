@@ -4,12 +4,21 @@ export type { RheoClientOptions } from './client.js'
 export { RheoApiError, RheoRateLimitError, RheoWebhookSignatureError } from './errors.js'
 
 export type {
+  AssetDomainSlug,
   DomainObject,
   DomainObjectAutoParts,
+  DomainObjectBooks,
+  DomainObjectComputers,
   DomainObjectElectronics,
   DomainObjectFashion,
+  DomainObjectUnit,
+  DomainObjectVehicles,
+  DomainObjectWatches,
+  DonorVehicle,
+  PartInfo,
   RheoItemStatus,
   RheoItemType,
+  UnitDomainSlug,
 } from './types/common.js'
 
 export type {
