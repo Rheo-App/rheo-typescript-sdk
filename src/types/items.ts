@@ -20,6 +20,14 @@ export interface UpsertItemRequest {
   useAiEnhancement?: boolean
   weightKg?: number
   currency?: string
+  /**
+   * How this item is shipped. Defaults to `integrated` (Rheo arranges shipping; buyer pays actual)
+   * when omitted. Use `seller_shipped` for heavy/freight parts you ship on your own carrier account
+   * and then report a tracking number via `client.orders.submitTracking(...)`; `fixed` (with a
+   * `shippingCost`) for a flat fee Rheo collects; `pickup_only` for collection-only.
+   * Note: `integrated` needs `weightKg` to compute a rate — without it the item resolves to pickup-only.
+   */
+  shippingStrategy?: 'integrated' | 'seller_shipped' | 'fixed' | 'pickup_only'
 }
 
 export interface UpsertItemResponse {

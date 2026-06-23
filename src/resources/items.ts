@@ -25,7 +25,7 @@ export interface RequestOptions {
   partnerAccount?: string
 }
 
-function requestConfig(
+export function requestConfig(
   opts?: RequestOptions,
   base?: AxiosRequestConfig,
 ): AxiosRequestConfig | undefined {

@@ -44,6 +44,11 @@ export type {
 } from './types/items.js'
 
 export type {
+  SellerTrackingRequest,
+  SellerTrackingResponse,
+} from './types/orders.js'
+
+export type {
   EventAccount,
   EventData,
   ItemCreatedEvent,

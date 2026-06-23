@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
 import { Items } from './resources/items.js'
+import { Orders } from './resources/orders.js'
 import { Webhooks } from './resources/webhooks.js'
 import { RheoApiError, RheoRateLimitError } from './errors.js'
 
@@ -18,6 +19,7 @@ const DEFAULT_MAX_RETRIES = 3
 
 export class RheoClient {
   readonly items: Items
+  readonly orders: Orders
   readonly webhooks: Webhooks
   private readonly http: AxiosInstance
 
@@ -42,6 +44,7 @@ export class RheoClient {
     this.http.interceptors.response.use(undefined, mapErrorInterceptor)
 
     this.items = new Items(this.http)
+    this.orders = new Orders(this.http)
     this.webhooks = new Webhooks(options.webhookSecret)
   }
 }

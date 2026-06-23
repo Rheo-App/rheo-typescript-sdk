@@ -103,9 +103,37 @@ Delivered event types: `item.created`, `item.images_ready`, `listing.created`,
 
 ---
 
+## Seller-shipped orders (your carrier, your tracking)
+
+For heavy or freight parts you ship on your own carrier account, sync the item with
+`shippingStrategy: 'seller_shipped'`. When it sells you get the `orderId` on the
+`item.sold` webhook; report the tracking number back and Rheo relays it to the buyer
+and releases your payout against it:
+
+```typescript
+await rheo.items.upsert('ERP_ENGINE_42', {
+  title: 'Komplett motor Volvo D5 — 2016',
+  price: 14500,
+  imageUrls: ['https://cdn.example.com/parts/42/1.jpg'],
+  shippingStrategy: 'seller_shipped',
+})
+
+// later, after the item.sold webhook gives you orderId:
+const shipment = await rheo.orders.submitTracking(orderId, {
+  carrier: 'schenker',
+  trackingNumber: 'SE123456789',
+})
+console.log(shipment.shipmentId)
+```
+
+`submitTracking` also accepts a per-call `{ partnerAccount }` for reseller routing.
+
+---
+
 ## Features
 
-- **Typed items resource** — upsert, get, delete, updatePrice, updateStatus, batchUpsert (up to 500 items), list with cursor pagination, summary, history
+- **Typed items resource** — upsert, get, delete, updatePrice, updateStatus, batchUpsert (up to 500 items), list with cursor pagination, summary, history, children
+- **Seller-shipped tracking** — `orders.submitTracking` for parts you ship on your own carrier (`shippingStrategy: 'seller_shipped'`)
 - **Webhook verification** — HMAC-SHA256, timing-safe, Express middleware included
 - **Automatic retry** — exponential backoff on 429 / 5xx, honours `Retry-After`
 - **Typed errors** — `RheoApiError`, `RheoRateLimitError`, `RheoWebhookSignatureError`
