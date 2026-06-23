@@ -1,12 +1,14 @@
 import type { DomainObject, RheoItemStatus, RheoItemType } from './common.js'
 
 export interface UpsertItemRequest {
-  title?: string
+  /** Required by the API (min 2 chars). */
+  title: string
+  /** Required by the API (may be empty []). Rheo downloads and processes these. */
+  imageUrls: string[]
   description?: string
   /** Required for `type: 'item'`; ignored (defaults to 0) for `type: 'container'`. */
   price?: number
   shippingCost?: number
-  imageUrls?: string[]
   domain?: DomainObject
   /** Semver schema version for the domain payload. Defaults to "1.0.0" if omitted. */
   schemaVersion?: string

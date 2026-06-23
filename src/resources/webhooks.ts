@@ -20,7 +20,15 @@ export class Webhooks {
   ): RheoEvent {
     const secrets = this.resolveSecrets(secret)
 
+    // Fail closed (not a TypeError) on a missing/non-string/malformed signature —
+    // e.g. an absent header or a multi-value header array.
+    if (typeof signature !== 'string') {
+      throw new RheoWebhookSignatureError('Missing or malformed signature')
+    }
     const raw = signature.startsWith('sha256=') ? signature.slice(7) : signature
+    if (raw.length === 0 || raw.length % 2 !== 0 || !/^[0-9a-fA-F]+$/.test(raw)) {
+      throw new RheoWebhookSignatureError('Signature is not valid hex')
+    }
     const sigBuffer = Buffer.from(raw, 'hex')
 
     const matches = secrets.some((s) => {

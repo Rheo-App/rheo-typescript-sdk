@@ -60,7 +60,12 @@ function makeRetryInterceptor(http: AxiosInstance, maxRetries: number) {
 
     const retryCount = config.__retryCount ?? 0
     const status: number | undefined = error.response?.status
-    const isRetryable = status === 429 || (status !== undefined && status >= 500)
+    // 429 is always safe to retry (the server rejected before processing). 5xx is
+    // only retried for idempotent methods — retrying a POST (e.g. orders/tracking)
+    // after the server already committed it would double-create.
+    const method = (config.method ?? 'get').toLowerCase()
+    const idempotent = method === 'get' || method === 'head' || method === 'put' || method === 'delete'
+    const isRetryable = status === 429 || (idempotent && status !== undefined && status >= 500)
 
     if (!isRetryable || retryCount >= maxRetries) {
       return Promise.reject(error)
@@ -69,8 +74,9 @@ function makeRetryInterceptor(http: AxiosInstance, maxRetries: number) {
     config.__retryCount = retryCount + 1
 
     const retryAfterHeader: string | undefined = error.response?.headers?.['retry-after']
-    const backoff = retryAfterHeader
-      ? parseInt(retryAfterHeader, 10) * 1000
+    const retryAfterSec = retryAfterHeader ? parseInt(retryAfterHeader, 10) : NaN
+    const backoff = Number.isFinite(retryAfterSec)
+      ? retryAfterSec * 1000
       : Math.min(200 * 2 ** retryCount, 10_000)
 
     await sleep(backoff)
